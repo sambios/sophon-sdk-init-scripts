@@ -1,5 +1,5 @@
 # sophon-sdk-init-scripts
-> create soc-sdk/tpu-nntc and install debs based on release directory
+> create soc-sdk/tpu-nntc and install debs based on release directory.<br>
 > This program is tested on ubuntu20.04
 # Usage
 1. show help information
