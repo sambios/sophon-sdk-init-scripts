@@ -150,13 +150,13 @@ if __name__ == '__main__':
                               soc_sdk_path, module_version, soc_sdk_path,
                               soc_sdk_path, module_version)
             op_cmd(cmd2)
-            cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-ffmpeg_{} sophon-ffmpeg-current".format(soc_sdk_path,
+            cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-ffmpeg_{} sophon-ffmpeg-latest".format(soc_sdk_path,
                                                                                                   module_version)
             op_cmd(cmd)
-            cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-opencv_{} sophon-opencv-current".format(soc_sdk_path,
+            cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-opencv_{} sophon-opencv-latest".format(soc_sdk_path,
                                                                                                   module_version)
             op_cmd(cmd)
-            cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-sample_{} sophon-sample-current".format(soc_sdk_path,
+            cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-sample_{} sophon-sample-latest".format(soc_sdk_path,
                                                                                                   module_version)
             op_cmd(cmd)
 
