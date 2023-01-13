@@ -65,7 +65,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='SophonSDK init tool')
     parser.add_argument('-o', '--ostype', default=config.ARCH_TYPE, help='target platform type')
     parser.add_argument('-p', '--path', default=config.RELEASE_ROOT, help='the path of SophonSDK')
-    parser.add_argument('-n', '--nntc-path', default='tpu-nntc', help='the install path for nntc sdk')
+    parser.add_argument('-i', '--install-path', default='bmnnsdk2', help='the install path for bmmnsdk2')
     parser.add_argument('-s', '--soc-sdk-create', action='store_true', help='create soc sdk')
 
     args = parser.parse_args()
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     ostype = args.ostype
     sdk_path = args.path
-    nntc_sdk_path = args.nntc_path
+    install_sdk_path = args.install_path
     is_create_soc_sdk = args.soc_sdk_create
 
     if ostype == "x86_64":
@@ -114,6 +114,9 @@ if __name__ == '__main__':
         # get nntc name
         module_path, module_version = module_path_pcie(sdk_path, 'tpu-nntc')
         print("Detected tpu-nntc version: {}".format(module_version))
+        if not os.path.exists(install_sdk_path):
+            os.mkdir(install_sdk_path)
+        nntc_sdk_path = os.path.join(install_sdk_path, "tpu-nntc")
         if os.path.exists(nntc_sdk_path):
             shutil.rmtree(nntc_sdk_path)
         os.mkdir(nntc_sdk_path)
@@ -126,7 +129,7 @@ if __name__ == '__main__':
 
         # create soc sdk
         if is_create_soc_sdk:
-            soc_sdk_path = 'soc-sdk'
+            soc_sdk_path = os.path.join(install_sdk_path, 'soc-sdk')
             if os.path.exists(soc_sdk_path):
                 shutil.rmtree(soc_sdk_path)
             os.mkdir(soc_sdk_path)
