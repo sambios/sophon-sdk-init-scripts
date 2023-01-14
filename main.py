@@ -22,7 +22,7 @@ def get_module_version(mod_path, mod_name):
                 mod_version = d1_dir.replace('_x86_64.tar.gz', '').split('_')[-1]
                 break
             elif d1_dir.endswith('.tar.gz'):
-                mod_version = d1_dir.replace('.tar.gz', '').split('_')[-1]
+                mod_version = d1_dir.replace('.tar.gz', '').replace(mod_name + '_', '')
                 break
 
     return mod_version
@@ -57,6 +57,32 @@ def module_path_soc(sdk_path, module_name):
         break
 
     return mod_path, mod_version
+
+def get_extract_module_dir(module_path, module_name):
+    dirs = os.listdir(module_path)
+    for dir in dirs:
+        if dir.startswith(module_name):
+            return dir
+
+
+def module_install_pcie(sdk_path, module_name, install_sdk_path):
+    module_path, module_version = module_path_pcie(sdk_path, module_name)
+    print("Detected {} version: {}".format(module_name, module_version))
+    if not os.path.exists(install_sdk_path):
+        os.mkdir(install_sdk_path)
+    real_path = os.path.join(install_sdk_path, module_name)
+    if os.path.exists(real_path):
+        shutil.rmtree(real_path)
+    os.mkdir(real_path)
+    cmd_args = "sudo tar zxf {}/{}_{}.tar.gz -C {}"
+    cmd = cmd_args.format(module_path, module_name, module_version, real_path)
+    op_cmd(cmd)
+    module_extract_dir = get_extract_module_dir(real_path, module_name)
+    cmd_args = "sudo cp -fr {}/{}/* {}/ && rm -fr {}/{}"
+    cmd = cmd_args.format(real_path, module_extract_dir, real_path,
+                          real_path, module_extract_dir)
+    op_cmd(cmd)
+    return
 
 
 # Press the green button in the gutter to run the script.
@@ -109,23 +135,14 @@ if __name__ == '__main__':
         cmd = "cd {} && sudo dpkg -i sophon-mw-sophon-opencv-dev_{}_amd64.deb"
         cmd2 = cmd.format(module_path, module_version)
         op_cmd(cmd2)
-
         # tpu-nntc
-        # get nntc name
-        module_path, module_version = module_path_pcie(sdk_path, 'tpu-nntc')
-        print("Detected tpu-nntc version: {}".format(module_version))
-        if not os.path.exists(install_sdk_path):
-            os.mkdir(install_sdk_path)
-        nntc_sdk_path = os.path.join(install_sdk_path, "tpu-nntc")
-        if os.path.exists(nntc_sdk_path):
-            shutil.rmtree(nntc_sdk_path)
-        os.mkdir(nntc_sdk_path)
-        cmd = "sudo tar zxf {}/tpu-nntc_{}.tar.gz -C {} && cp -fr {}/tpu-nntc_{}/* {}/ && " \
-              "rm -fr {}/tpu-nntc_{}"
-        cmd2 = cmd.format(module_path, module_version, nntc_sdk_path,
-                          nntc_sdk_path, module_version, nntc_sdk_path,
-                          nntc_sdk_path, module_version)
-        op_cmd(cmd2)
+        module_install_pcie(sdk_path, 'tpu-nntc', install_sdk_path)
+        # sophon-demo
+        module_install_pcie(sdk_path, 'sophon-demo', install_sdk_path)
+        # sophon-pipeline
+        module_install_pcie(sdk_path, 'sophon-pipeline', install_sdk_path)
+        # sophon-sail
+        module_install_pcie(sdk_path, 'sophon-sail', install_sdk_path)
 
         # create soc sdk
         if is_create_soc_sdk:
@@ -151,13 +168,13 @@ if __name__ == '__main__':
                               soc_sdk_path, module_version)
             op_cmd(cmd2)
             cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-ffmpeg_{} sophon-ffmpeg-latest".format(soc_sdk_path,
-                                                                                                  module_version)
+                                                                                                 module_version)
             op_cmd(cmd)
             cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-opencv_{} sophon-opencv-latest".format(soc_sdk_path,
-                                                                                                  module_version)
+                                                                                                 module_version)
             op_cmd(cmd)
             cmd = "cd {}/opt/sophon/ && sudo ln -s sophon-sample_{} sophon-sample-latest".format(soc_sdk_path,
-                                                                                                  module_version)
+                                                                                                 module_version)
             op_cmd(cmd)
 
     elif ostype == "soc":
