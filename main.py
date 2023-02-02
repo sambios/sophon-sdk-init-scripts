@@ -89,10 +89,11 @@ def module_install_pcie(sdk_path, module_name, install_sdk_path):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='SophonSDK init tool')
-    parser.add_argument('-o', '--ostype', default=config.ARCH_TYPE, help='target platform type')
+    parser.add_argument('-o', '--ostype', default=config.ARCH_TYPE, help='target platform type:x86_64|soc')
     parser.add_argument('-p', '--path', default=config.RELEASE_ROOT, help='the path of SophonSDK')
-    parser.add_argument('-i', '--install-path', default='bmnnsdk2', help='the install path for bmmnsdk2')
-    parser.add_argument('-s', '--soc-sdk-create', action='store_true', help='create soc sdk')
+    parser.add_argument('-m', '--install-mode', default='standard', help='install mode:standard, all')
+    parser.add_argument('-i', '--install-path', default='sgnnsdk', help='the install path for sdk')
+    parser.add_argument('-s', '--install-soc-sdk', action='store_true', help='install soc sdk')
 
     args = parser.parse_args()
     print(args)
@@ -100,7 +101,8 @@ if __name__ == '__main__':
     ostype = args.ostype
     sdk_path = args.path
     install_sdk_path = args.install_path
-    is_create_soc_sdk = args.soc_sdk_create
+    install_mode = args.install_mode
+    is_create_soc_sdk = args.install_soc_sdk
 
     if ostype == "x86_64":
         # libsophon runtime
@@ -135,14 +137,16 @@ if __name__ == '__main__':
         cmd = "cd {} && sudo dpkg -i sophon-mw-sophon-opencv-dev_{}_amd64.deb"
         cmd2 = cmd.format(module_path, module_version)
         op_cmd(cmd2)
-        # tpu-nntc
-        module_install_pcie(sdk_path, 'tpu-nntc', install_sdk_path)
-        # sophon-demo
-        module_install_pcie(sdk_path, 'sophon-demo', install_sdk_path)
-        # sophon-pipeline
-        module_install_pcie(sdk_path, 'sophon-pipeline', install_sdk_path)
-        # sophon-sail
-        module_install_pcie(sdk_path, 'sophon-sail', install_sdk_path)
+
+        if install_mode == 'all':
+            # tpu-nntc
+            module_install_pcie(sdk_path, 'tpu-nntc', install_sdk_path)
+            # sophon-demo
+            module_install_pcie(sdk_path, 'sophon-demo', install_sdk_path)
+            # sophon-pipeline
+            module_install_pcie(sdk_path, 'sophon-pipeline', install_sdk_path)
+            # sophon-sail
+            module_install_pcie(sdk_path, 'sophon-sail', install_sdk_path)
 
         # create soc sdk
         if is_create_soc_sdk:

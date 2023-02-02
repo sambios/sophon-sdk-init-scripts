@@ -12,9 +12,9 @@
 python3 main.py -o x86_64 -p Release_221201-public -i sgnnsdk
 ```     
      
-3. If you want to install soc sdk for cross compile, you should add -s or --soc-sdk-create option to command line, like this:
+3. If you want to install soc sdk for cross compile, you should add -s or --install-soc-sdk option to command line, like this:
 ```commandline
-python3 main.py -o x86_64 -p Release_221201-public -i sgnnsdk --soc-sdk-create
+python3 main.py -o x86_64 -p Release_221201-public -i sgnnsdk --install-soc-sdk
 ```
 4. After install, the tree of install directory will be like this:
 ```commandline
