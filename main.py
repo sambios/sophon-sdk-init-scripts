@@ -9,12 +9,29 @@ def op_cmd(cmd):
     print(cmd)
     os.system(cmd)
 
+def op_rmtree(cmd):
+    os.system('sudo rm -fr '+cmd)
+
 
 def get_module_version(mod_path, mod_name):
     mod_version = 'unknown'
     d1_dirs = os.listdir(mod_path)
     for d1_dir in d1_dirs:
-        if d1_dir.startswith(mod_name):
+        if mod_name.startswith("tpu-nntc"):
+          if d1_dir.startswith(mod_name+'_v'):
+            if d1_dir.endswith('aarch64.tar.gz'):
+                mod_version = d1_dir.replace('_aarch64.tar.gz', '').split('_')[-1]
+                break
+            elif d1_dir.endswith('x86_64.tar.gz'):
+                mod_version = d1_dir.replace('_x86_64.tar.gz', '').split('_')[-1]
+                break
+            elif d1_dir.endswith('.tar.gz'):
+                x=d1_dir.replace('.tar.gz', '')
+                print(x)
+                mod_version = x.split('_')[-1]
+                break
+        else:
+          if d1_dir.startswith(mod_name):
             if d1_dir.endswith('aarch64.tar.gz'):
                 mod_version = d1_dir.replace('_aarch64.tar.gz', '').split('_')[-1]
                 break
@@ -72,13 +89,14 @@ def module_install_pcie(sdk_path, module_name, install_sdk_path):
         os.mkdir(install_sdk_path)
     real_path = os.path.join(install_sdk_path, module_name)
     if os.path.exists(real_path):
-        shutil.rmtree(real_path)
+        op_rmtree(real_path)
     os.mkdir(real_path)
     cmd_args = "sudo tar zxf {}/{}_{}.tar.gz -C {}"
     cmd = cmd_args.format(module_path, module_name, module_version, real_path)
     op_cmd(cmd)
     module_extract_dir = get_extract_module_dir(real_path, module_name)
-    cmd_args = "sudo cp -fr {}/{}/* {}/ && rm -fr {}/{}"
+    print("module_extract_dir=%s" % (module_extract_dir))
+    cmd_args = "sudo cp -fr {}/{}/* {}/ && sudo rm -fr {}/{}"
     cmd = cmd_args.format(real_path, module_extract_dir, real_path,
                           real_path, module_extract_dir)
     op_cmd(cmd)
@@ -105,6 +123,7 @@ if __name__ == '__main__':
     is_create_soc_sdk = args.install_soc_sdk
 
     if ostype == "x86_64":
+        op_cmd("sudo apt install libncurses-dev")
         # libsophon runtime
         module_path, module_version = module_path_pcie(sdk_path, 'libsophon')
         print("Detected libsophon version: {}".format(module_version))
@@ -152,11 +171,11 @@ if __name__ == '__main__':
         if is_create_soc_sdk:
             soc_sdk_path = os.path.join(install_sdk_path, 'soc-sdk')
             if os.path.exists(soc_sdk_path):
-                shutil.rmtree(soc_sdk_path)
-            os.mkdir(soc_sdk_path)
+                op_rmtree(soc_sdk_path)
+            os.makedirs(soc_sdk_path)
             module_path, module_version = module_path_soc(sdk_path, 'sophon-img')
             cmd = "sudo tar zxf {}/libsophon_soc_{}_aarch64.tar.gz -C {} && cp -fr {}/libsophon_soc_{}_aarch64/* {}/ && " \
-                  "rm -fr {}/libsophon_soc_{}_aarch64"
+                  "sudo rm -fr {}/libsophon_soc_{}_aarch64"
             cmd2 = cmd.format(module_path, module_version, soc_sdk_path,
                               soc_sdk_path, module_version, soc_sdk_path,
                               soc_sdk_path, module_version)
@@ -166,7 +185,7 @@ if __name__ == '__main__':
 
             module_path, module_version = module_path_soc(sdk_path, 'sophon-mw')
             cmd = "sudo tar zxf {}/sophon-mw-soc_{}_aarch64.tar.gz -C {} && cp -fr {}/sophon-mw-soc_{}_aarch64/* {}/ && " \
-                  "rm -fr {}/sophon-mw-soc_{}_aarch64"
+                  "sudo rm -fr {}/sophon-mw-soc_{}_aarch64"
             cmd2 = cmd.format(module_path, module_version, soc_sdk_path,
                               soc_sdk_path, module_version, soc_sdk_path,
                               soc_sdk_path, module_version)
