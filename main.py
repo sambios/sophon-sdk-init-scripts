@@ -160,6 +160,8 @@ if __name__ == '__main__':
         if install_mode == 'all':
             # tpu-nntc
             module_install_pcie(sdk_path, 'tpu-nntc', install_sdk_path)
+            # tpu-mlir
+            module_install_pcie(sdk_path, 'tpu-mlir', install_sdk_path)
             # sophon-demo
             module_install_pcie(sdk_path, 'sophon-demo', install_sdk_path)
             # sophon-pipeline
